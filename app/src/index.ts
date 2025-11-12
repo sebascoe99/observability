@@ -24,6 +24,14 @@ app.use(pinoHttp(httpLogger));
 const register = new client.Registry();
 client.collectDefaultMetrics({ register });
 
+// --- Contador de HTTP requests totales ---
+const httpRequestsTotal = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Contador total de solicitudes HTTP',
+  labelNames: ['method', 'route', 'status_code'],
+});
+register.registerMetric(httpRequestsTotal);
+
 // --- Histograma para medir latencia HTTP ---
 const httpRequestDuration = new client.Histogram({
   name: 'http_request_duration_seconds',
@@ -39,17 +47,28 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     method: req.method,
     route: req.path,
   });
-  res.on('finish', () => end({ status_code: String(res.statusCode) }));
+  res.on('finish', () => {
+    const labels = {
+      method: req.method,
+      route: req.path,
+      status_code: String(res.statusCode),
+    };
+    end(labels);
+    httpRequestsTotal.inc(labels);
+  });
   next();
 });
 
 // --- Rutas demo ---
 app.get('/health', (_req: Request, res: Response) => {
+  logger.info('Health check requested');
   res.json({ ok: true });
 });
 
 app.get('/api/hello', async (_req: Request, res: Response) => {
+  logger.info('Hello endpoint called');
   await new Promise((r) => setTimeout(r, Math.floor(Math.random() * 200)));
+  logger.info('Hello endpoint responding');
   res.json({ message: 'Hello Observability!' });
 });
 

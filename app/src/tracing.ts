@@ -3,10 +3,6 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { Resource } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
-import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
-
-// Mostrar más detalles de depuración (opcional)
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
 const sdk = new NodeSDK({
   resource: new Resource({

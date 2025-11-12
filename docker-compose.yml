@@ -52,7 +52,7 @@ services:
     image: grafana/promtail:2.9.0
     container_name: promtail
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
     command: [ "--config.file=/etc/promtail/config.yml" ]
     depends_on:
@@ -60,7 +60,7 @@ services:
     restart: unless-stopped
 
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector-contrib:latest
     container_name: otelcol
     command: [ "--config=/etc/otel-collector.yml" ]
     volumes:

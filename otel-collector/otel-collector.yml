@@ -10,15 +10,11 @@ processors:
   batch:
 
 exporters:
-  # 👁️ Muestra spans en la consola del collector
   debug:
     verbosity: detailed
 
-  # 🚀 Exporta trazas al servicio Tempo por HTTP
   otlphttp/tempo:
     endpoint: http://tempo:4318
-    tls:
-      insecure: true
 
 service:
   pipelines:
